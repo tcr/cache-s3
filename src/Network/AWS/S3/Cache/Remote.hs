@@ -161,7 +161,7 @@ uploadCache isPublic (hdl, cSize, newHash, comp) = do
   runLoggingAWS_ $
     runConduit $
     sourceHandle hdl .|
-    passthroughSink (streamUpload (Just (100 * 2 ^ (20 :: Int))) cmu) (void . pure) .|
+    passthroughSink (streamUpload (Just (2 ^ (20 :: Int))) cmu) (void . pure) .|
     getProgressReporter reporter cSize .|
     sinkNull
   logAWS LevelInfo $ "Finished uploading. Files are cached on S3."

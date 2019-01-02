@@ -65,21 +65,9 @@ script:
 after_success:
 - | # Do not cache PRs
   if [ "$TRAVIS_PULL_REQUEST" = false ]; then
-    if [ "$TRAVIS_BRANCH" = master ]; then
-      stack --no-terminal exec -- cache-s3 --prefix=$TRAVIS_REPO_SLUG \
-                                            --git-branch="$TRAVIS_BRANCH" \
-                                            --suffix="$TRAVIS_OS_NAME" \
-                                            save stack
-    fi
-    stack --no-terminal exec -- cache-s3 --prefix=$TRAVIS_REPO_SLUG \
-                                         --git-branch="$TRAVIS_BRANCH" \
-                                         --suffix="$TRAVIS_OS_NAME" \
-                                         save stack work
-    if [ -n "$TRAVIS_TAG" ]; then
-      travis_retry curl -L https://github.com/tfausak/github-release/releases/download/$GITHUB_RELEASE_VERSION/github-release-$TRAVIS_OS_NAME.gz | gunzip > github-release
-      chmod a+x github-release
-      stack exec -- cp $(which cache-s3) .
-      tar -czf cache-s3.tar.gz cache-s3
-      ./github-release upload --token=$GITHUB_TOKEN --repo=$TRAVIS_REPO_SLUG --file=cache-s3.tar.gz --tag=$TRAVIS_TAG --name=cache-s3-$TRAVIS_TAG-$TRAVIS_OS_NAME-x86_64.tar.gz
-    fi
+    travis_retry curl -L https://github.com/tfausak/github-release/releases/download/$GITHUB_RELEASE_VERSION/github-release-$TRAVIS_OS_NAME.gz | gunzip > github-release
+    chmod a+x github-release
+    stack exec -- cp $(which cache-s3) .
+    tar -czf cache-s3.tar.gz cache-s3
+    ./github-release upload --token=$GITHUB_TOKEN --repo=$TRAVIS_REPO_SLUG --file=cache-s3.tar.gz --tag=$TRAVIS_TAG --name=cache-s3-$TRAVIS_TAG-$TRAVIS_OS_NAME-x86_64.tar.gz
   fi
