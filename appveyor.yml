@@ -40,13 +40,6 @@ test_script:
 
 
 after_test:
-- ps: >-
-    if ( -not $env:APPVEYOR_PULL_REQUEST_NUMBER ) {
-      if ( $env:APPVEYOR_REPO_BRANCH -eq "master" ) {
-        stack exec -- cache-s3 --prefix=$env:APPVEYOR_REPO_NAME --git-branch=$env:APPVEYOR_REPO_BRANCH --suffix=windows save stack
-      }
-      stack exec -- cache-s3 --prefix=$env:APPVEYOR_REPO_NAME --git-branch=$env:APPVEYOR_REPO_BRANCH --suffix=windows save stack work
-    }
 # Upload an executable to the release for every git tag
 - ps: >-
     if ($env:APPVEYOR_REPO_TAG_NAME) {
@@ -56,10 +49,3 @@ after_test:
       7z a cache-s3.zip cache-s3.exe
       .\github-release upload --token=$env:GITHUB_TOKEN --repo=$env:APPVEYOR_REPO_NAME --file=cache-s3.zip --tag=$env:APPVEYOR_REPO_TAG_NAME --name=cache-s3-$env:APPVEYOR_REPO_TAG_NAME-windows-x86_64.zip
     }
-notifications:
-  - provider: Email
-    to:
-      - alexey@fpcomplete.com
-    on_build_success: false
-    on_build_failure: false
-    on_build_status_changed: true
